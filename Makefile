@@ -9,12 +9,12 @@ build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o $(GOBIN)/app ./cmd/${APP_NAME}/main.go
 
 .PHONY: build_linux_amd64
-build:
+build_linux_amd64:
 	go env -w GOPRIVATE=github.com/on0z/*
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o $(GOBIN)/app ./cmd/${APP_NAME}/main.go
 
 .PHONY: build_linux_arm64
-build:
+build_linux_arm64:
 	go env -w GOPRIVATE=github.com/on0z/*
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o $(GOBIN)/app ./cmd/${APP_NAME}/main.go
 
