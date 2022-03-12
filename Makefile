@@ -1,4 +1,4 @@
-# APP_NAME=
+APP_NAME=libadrsir-sample
 
 GOBASE=$(shell pwd)
 GOBIN=$(GOBASE)/bin
@@ -25,11 +25,11 @@ start:
 
 .PHONY: test-v
 test-v:
-	go test -v ./pkg/...
+	go test -v ./...
 
 .PHONY: test
 test:
-	LogDiscard=True go test ./pkg/...
+	LogDiscard=True go test ./...
 
 .PHONY: clean
 clean:
