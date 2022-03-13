@@ -27,19 +27,14 @@ func TestAdrsirSend(t *testing.T) {
 		err string
 	}
 
-	type mockBusReadReg struct {
-		Err error
-	}
-
-	type mockBusWriteReg struct {
+	type mockBusTx struct {
 		Err error
 	}
 
 	cases := []struct {
 		name string
 		input
-		mockBusReadReg
-		mockBusWriteReg
+		mockBusTx
 		expect
 	}{
 		{
@@ -47,7 +42,7 @@ func TestAdrsirSend(t *testing.T) {
 			input: input{
 				irDataStr: "00002800D00029003900160038001600120016001300160012001700120016001300160012001700380016001200170012001600130016001200170012001600130016003800160013001600380016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016003900160012001600390016003800160012001600390016003800160011004205",
 			},
-			mockBusWriteReg: mockBusWriteReg{
+			mockBusTx: mockBusTx{
 				Err: nil,
 			},
 			expect: expect{
@@ -59,7 +54,7 @@ func TestAdrsirSend(t *testing.T) {
 			input: input{
 				irDataStr: "ZZ",
 			},
-			mockBusWriteReg: mockBusWriteReg{
+			mockBusTx: mockBusTx{
 				Err: nil,
 			},
 			expect: expect{
@@ -71,7 +66,7 @@ func TestAdrsirSend(t *testing.T) {
 			input: input{
 				irDataStr: "00002800D00029003900160038001600120016001300160012001700120016001300160012001700380016001200170012001600130016001200170012001600130016003800160013001600380016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016003900160012001600390016003800160012001600390016003800160011004205",
 			},
-			mockBusWriteReg: mockBusWriteReg{
+			mockBusTx: mockBusTx{
 				Err: errors.New("i2c Error"),
 			},
 			expect: expect{
@@ -84,9 +79,9 @@ func TestAdrsirSend(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			mockBus := mock.NewMockBus(ctrl)
 			mockBus.EXPECT().
-				WriteReg(gomock.Any(), gomock.Any()).
+				Tx(gomock.Any(), gomock.Any()).
 				AnyTimes().
-				Return(c.mockBusWriteReg.Err)
+				Return(c.mockBusTx.Err)
 
 			lib := adrsir{
 				bus: mockBus,

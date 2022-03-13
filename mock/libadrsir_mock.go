@@ -33,32 +33,18 @@ func (m *MockBus) EXPECT() *MockBusMockRecorder {
 	return m.recorder
 }
 
-// ReadReg mocks base method.
-func (m *MockBus) ReadReg(arg0 byte, arg1 []byte) error {
+// Tx mocks base method.
+func (m *MockBus) Tx(w, r []byte) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadReg", arg0, arg1)
+	ret := m.ctrl.Call(m, "Tx", w, r)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// ReadReg indicates an expected call of ReadReg.
-func (mr *MockBusMockRecorder) ReadReg(arg0, arg1 interface{}) *gomock.Call {
+// Tx indicates an expected call of Tx.
+func (mr *MockBusMockRecorder) Tx(w, r interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadReg", reflect.TypeOf((*MockBus)(nil).ReadReg), arg0, arg1)
-}
-
-// WriteReg mocks base method.
-func (m *MockBus) WriteReg(arg0 byte, arg1 []byte) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WriteReg", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// WriteReg indicates an expected call of WriteReg.
-func (mr *MockBusMockRecorder) WriteReg(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteReg", reflect.TypeOf((*MockBus)(nil).WriteReg), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Tx", reflect.TypeOf((*MockBus)(nil).Tx), w, r)
 }
 
 // MockAdrsirAPI is a mock of AdrsirAPI interface.
@@ -99,15 +85,15 @@ func (mr *MockAdrsirAPIMockRecorder) Get(index interface{}) *gomock.Call {
 }
 
 // Send mocks base method.
-func (m *MockAdrsirAPI) Send(irData string) error {
+func (m *MockAdrsirAPI) Send(irCommandStr string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Send", irData)
+	ret := m.ctrl.Call(m, "Send", irCommandStr)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Send indicates an expected call of Send.
-func (mr *MockAdrsirAPIMockRecorder) Send(irData interface{}) *gomock.Call {
+func (mr *MockAdrsirAPIMockRecorder) Send(irCommandStr interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockAdrsirAPI)(nil).Send), irData)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockAdrsirAPI)(nil).Send), irCommandStr)
 }
