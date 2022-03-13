@@ -20,8 +20,7 @@ const (
 )
 
 type Bus interface {
-	ReadReg(byte, []byte) error
-	WriteReg(byte, []byte) error
+	Tx(w, r []byte) error
 }
 
 type AdrsirAPI interface {
@@ -62,19 +61,20 @@ func (a *adrsir) Send(irCommandStr string) error {
 	irCommandLength := uint16(len(irCommand))
 	sendData := []byte{byte(irCommandLength >> 8), byte(irCommandLength & 0xff)}
 
-	err := a.bus.WriteReg(W2_data_num_write, sendData)
-	if err != nil {
+	if err := a.bus.Tx(append([]byte{W2_data_num_write}, sendData...), nil); err != nil {
 		return errors.WithStack(err)
 	}
 
 	// irCommandを4バイトづつ書き込む
 	for i := 0; i < int(irCommandLength); i += 4 {
-		a.bus.WriteReg(W3_data_write, irCommand[i:i+4])
+		err := a.bus.Tx(append([]byte{W3_data_write}, irCommand[i:i+4]...), nil)
+		if err != nil {
+			return errors.WithStack(err)
+		}
 	}
 
 	// transferコマンドを書き込む
-	err = a.bus.WriteReg(T1_trans_start, []byte{0})
-	if err != nil {
+	if err := a.bus.Tx([]byte{T1_trans_start}, nil); err != nil {
 		return errors.WithStack(err)
 	}
 
