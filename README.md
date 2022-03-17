@@ -21,13 +21,13 @@ import (
 )
 
 func main() {
-  // setup periph.io host
+	// setup periph.io host
 	_, err := host.Init()
 	if err != nil {
 		log.Fatalf("failed to initialize periph: %v", err)
 	}
   
-  // Use i2creg I²C bus registry to find the first available I²C bus.
+	// Use i2creg I²C bus registry to find the first available I²C bus.
 	b, err := i2creg.Open("")
 	if err != nil {
 		log.Fatal(err)
