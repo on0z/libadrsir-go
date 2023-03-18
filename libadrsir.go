@@ -31,13 +31,15 @@ type AdrsirAPI interface {
 }
 
 type adrsir struct {
-	mu  sync.Mutex
-	bus Bus
+	mu           sync.Mutex
+	bus          Bus
+	waitDuration time.Duration
 }
 
-func NewADRSIR(device Bus) AdrsirAPI {
+func NewADRSIR(device Bus, waitDuration time.Duration) AdrsirAPI {
 	return &adrsir{
-		bus: device,
+		bus:          device,
+		waitDuration: waitDuration,
 	}
 }
 
@@ -83,7 +85,7 @@ func (a *adrsir) Send(irCommandStr string) error {
 		return errors.WithStack(err)
 	}
 
-	time.Sleep(200 * time.Millisecond)
+	time.Sleep(a.waitDuration)
 
 	a.mu.Unlock()
 

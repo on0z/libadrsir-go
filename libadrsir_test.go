@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -88,7 +89,8 @@ func TestAdrsirSend(t *testing.T) {
 				Return(c.mockBusTx.Err)
 
 			lib := adrsir{
-				bus: mockBus,
+				bus:          mockBus,
+				waitDuration: 200 * time.Millisecond,
 			}
 
 			errCh := make(chan error)
