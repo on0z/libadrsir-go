@@ -2,6 +2,8 @@ package libadrsir
 
 import (
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -29,12 +31,15 @@ type AdrsirAPI interface {
 }
 
 type adrsir struct {
-	bus Bus
+	mu           sync.Mutex
+	bus          Bus
+	waitDuration time.Duration
 }
 
-func NewADRSIR(device Bus) AdrsirAPI {
+func NewADRSIR(device Bus, waitDuration time.Duration) AdrsirAPI {
 	return &adrsir{
-		bus: device,
+		bus:          device,
+		waitDuration: waitDuration,
 	}
 }
 
@@ -61,6 +66,8 @@ func (a *adrsir) Send(irCommandStr string) error {
 	irCommandLength := uint16(len(irCommand))
 	sendData := []byte{byte(irCommandLength >> 8), byte(irCommandLength & 0xff)}
 
+	a.mu.Lock()
+
 	if err := a.bus.Tx(append([]byte{W2_data_num_write}, sendData...), nil); err != nil {
 		return errors.WithStack(err)
 	}
@@ -77,6 +84,12 @@ func (a *adrsir) Send(irCommandStr string) error {
 	if err := a.bus.Tx([]byte{T1_trans_start}, nil); err != nil {
 		return errors.WithStack(err)
 	}
+
+	if a.waitDuration > 0 {
+		time.Sleep(a.waitDuration)
+	}
+
+	a.mu.Unlock()
 
 	return nil
 }
