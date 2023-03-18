@@ -3,6 +3,7 @@ package libadrsir
 import (
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -81,6 +82,8 @@ func (a *adrsir) Send(irCommandStr string) error {
 	if err := a.bus.Tx([]byte{T1_trans_start}, nil); err != nil {
 		return errors.WithStack(err)
 	}
+
+	time.Sleep(200 * time.Millisecond)
 
 	a.mu.Unlock()
 
