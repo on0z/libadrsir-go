@@ -28,7 +28,8 @@ func TestAdrsirSend(t *testing.T) {
 	}
 
 	type mockBusTx struct {
-		Err error
+		Err       error
+		CallCount int
 	}
 
 	cases := []struct {
@@ -43,7 +44,8 @@ func TestAdrsirSend(t *testing.T) {
 				irDataStr: "00002800D00029003900160038001600120016001300160012001700120016001300160012001700380016001200170012001600130016001200170012001600130016003800160013001600380016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016003900160012001600390016003800160012001600390016003800160011004205",
 			},
 			mockBusTx: mockBusTx{
-				Err: nil,
+				Err:       nil,
+				CallCount: 45,
 			},
 			expect: expect{
 				err: "",
@@ -55,7 +57,8 @@ func TestAdrsirSend(t *testing.T) {
 				irDataStr: "ZZ",
 			},
 			mockBusTx: mockBusTx{
-				Err: nil,
+				Err:       nil,
+				CallCount: 0,
 			},
 			expect: expect{
 				err: "strconv.ParseUint: parsing \"ZZ\": invalid syntax",
@@ -67,7 +70,8 @@ func TestAdrsirSend(t *testing.T) {
 				irDataStr: "00002800D00029003900160038001600120016001300160012001700120016001300160012001700380016001200170012001600130016001200170012001600130016003800160013001600380016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016001300160012001700120016003900160012001600390016003800160012001600390016003800160011004205",
 			},
 			mockBusTx: mockBusTx{
-				Err: errors.New("i2c Error"),
+				Err:       errors.New("i2c Error"),
+				CallCount: 1,
 			},
 			expect: expect{
 				err: "i2c Error",
@@ -80,14 +84,18 @@ func TestAdrsirSend(t *testing.T) {
 			mockBus := mock.NewMockBus(ctrl)
 			mockBus.EXPECT().
 				Tx(gomock.Any(), gomock.Any()).
-				AnyTimes().
+				Times(c.mockBusTx.CallCount).
 				Return(c.mockBusTx.Err)
 
 			lib := adrsir{
 				bus: mockBus,
 			}
 
-			err := lib.Send(c.input.irDataStr)
+			errCh := make(chan error)
+			go func() {
+				errCh <- lib.Send(c.input.irDataStr)
+			}()
+			err := <-errCh
 			if c.expect.err != "" {
 				assert.EqualError(t, err, c.expect.err)
 				fmt.Println(err)
