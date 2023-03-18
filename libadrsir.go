@@ -85,7 +85,9 @@ func (a *adrsir) Send(irCommandStr string) error {
 		return errors.WithStack(err)
 	}
 
-	time.Sleep(a.waitDuration)
+	if a.waitDuration > 0 {
+		time.Sleep(a.waitDuration)
+	}
 
 	a.mu.Unlock()
 
